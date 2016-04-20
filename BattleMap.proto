@@ -1,0 +1,41 @@
+package BattleTech_GameBoard;
+
+message MapHex {
+  required int32 BaseImage = 1;
+
+  enum HexType {
+    	EMPTY = 0;
+		WATER = 1;
+    	LGTFOREST = 2;
+    	HVYFOREST = 3;
+    	ROUGH = 4;
+    	BUILDING = 5;
+    }
+
+  enum FlipType {
+	NONE = 0;
+	HORIZONTAL = 1;
+	VIRTICAL = 2;
+	HOR_AND_VIR = 3;
+    }
+
+  optional int32 TerrainDetail = 2;
+  optional int32 ObjectImage = 3;
+  optional HexType Terrain = 4 [ default = EMPTY];
+  optional int32 HexElevation = 5;
+  optional FlipType TerrainFlip  = 6 [ default = NONE];
+  optional FlipType ObjectFlip = 7 [ default = NONE];
+}
+
+message MapColumn {
+  repeated MapHex HexColumn = 1;
+  optional int32 HexCount = 2;
+  optional bool ColumnIndent = 3;
+}
+
+message BattleField {
+  repeated MapColumn ColumnList = 1;
+  optional int32 ColumnTotal = 2;
+  optional int32 RowTotal = 3;
+  optional int32 MapTotal = 4;
+}

@@ -7,38 +7,48 @@
 
 using namespace std;
 
-void build_New_Map(BattleTech_GameBoard::BattleField *BaseTemplate,BattleTech_GameBoard::MapHex::HexType TileClass,int HexElevation)
+int build_New_Map(BattleTech_GameBoard::BattleField *BaseTemplate,BattleTech_GameBoard::MapHex::HexType TileClass,int HexElevation)
 {
-	int xAxis = 1;
-	BattleTech_GameBoard::MapColumn *ColumnList;
-	BattleTech_GameBoard::MapHex *MapTile;
-	for(int col = 0;col < 24; col++)
+	int ReturnValue = 0;
+	if(BaseTemplate->columnlist_size() == 0)
 	{
-		//cout << " "<< xAxis << " check" << endl;
-		//cout << "[" << col << "]\t";//current column number
-		ColumnList = BaseTemplate->add_columnlist();
-		for(int row = 0; row < xAxis; row++)
+		int xAxis = 1;
+		BattleTech_GameBoard::MapColumn *ColumnList;
+		BattleTech_GameBoard::MapHex *MapTile;
+		for(int col = 0;col < 24; col++)
 		{
-			//cout << row << " ";//hexes assigned to this column
+			//cout << " "<< xAxis << " check" << endl;
+			//cout << "[" << col << "]\t";//current column number
+			ColumnList = BaseTemplate->add_columnlist();
+			for(int row = 0; row < xAxis; row++)
+			{
+				//cout << row << " ";//hexes assigned to this column
 			
-			MapTile = ColumnList->add_hexcolumn();
-			//Build full Maps based on Prebuilt tile classes found in BT_MapBuilder.h <line 193>
-			Pre_Built_Tile_Selector(MapTile,TileClass,HexElevation);	
-		}
-		cout << endl;//return character for row number output.
-		if((xAxis < 15) && (col < 16))
-		{
-			xAxis+=2;
-		}
-		else if(col == 16)
-		{
-			xAxis--;
-		}
-		else if(col > 16)
-		{
-			xAxis-=2;
+				MapTile = ColumnList->add_hexcolumn();
+				//Build full Maps based on Prebuilt tile classes found in BT_MapBuilder.h <line 193>
+				Pre_Built_Tile_Selector(MapTile,TileClass,HexElevation);	
+			}
+			cout << endl;//return character for row number output.
+			if((xAxis < 15) && (col < 16))
+			{
+				xAxis+=2;
+			}
+			else if(col == 16)
+			{
+				xAxis--;
+			}
+			else if(col > 16)
+			{
+				xAxis-=2;
+			}
 		}
 	}
+	else
+	{
+		cout << "build_New_Map: ERROR:Map is already initialized" << endl;
+		ReturnValue= -1;
+	}
+	return ReturnValue;
 }
 
 int MenuOptions(BattleTech_GameBoard::BattleField *BaseTemplate, SDL_Event *Event)
@@ -86,6 +96,70 @@ int MenuOptions(BattleTech_GameBoard::BattleField *BaseTemplate, SDL_Event *Even
 			cerr << "Failed to write map file to disk." << endl;
 			TaskComplete = -1;
 		}
+	}
+	return TaskComplete;
+}
+
+int SaveMapFile(BattleTech_GameBoard::BattleField *BaseTemplate,string FILEPATH)
+{
+	string SavedMap = FILEPATH;
+	int TaskComplete = 0;
+	
+	switch(Event->key.keysym.sym)
+	{
+		cout << "SaveMapFile: ERROR: Map not Initializied " << PATHFILE << endl;
+/*
+		// Read the pre-existing map file.
+		fstream input(SavedMap.c_str(), ios::in | ios::binary);
+		if (!BaseTemplate->ParseFromIstream(&input))
+		{
+			cerr << "Failed to read Map from disk." << endl;
+			TaskComplete = -1;
+		}
+		TaskComplete = 1;
+*/
+	}
+	else
+	{
+		// Write the new map file back to disk.
+		fstream output(SavedMap.c_str(), ios::out | ios::trunc | ios::binary);
+		if (!BaseTemplate->SerializeToOstream(&output))
+		{
+			cerr << "Failed to write map file to disk." << endl;
+			TaskComplete = -1;
+		}
+	}
+	return TaskComplete;
+}
+
+int LoadMapFile(BattleTech_GameBoard::BattleField *BaseTemplate,string FILEPATH)
+{
+	string SavedMap = FILEPATH;
+	int TaskComplete = 0;
+	
+	switch(Event->key.keysym.sym)
+	{
+		// Read the pre-existing map file.
+		fstream input(SavedMap.c_str(), ios::in | ios::binary);
+		if (!BaseTemplate->ParseFromIstream(&input))
+		{
+			cerr << "Failed to read Map from disk." << endl;
+			TaskComplete = -1;
+		}
+		TaskComplete = 1;
+	}
+	else
+	{
+	        cout << "LoadMapFile: ERROR: Map already Initializied " << PATHFILE << endl;	
+/*
+		// Write the new map file back to disk.
+		fstream output(SavedMap.c_str(), ios::out | ios::trunc | ios::binary);
+		if (!BaseTemplate->SerializeToOstream(&output))
+		{
+			cerr << "Failed to write map file to disk." << endl;
+			TaskComplete = -1;
+		}
+*/
 	}
 	return TaskComplete;
 }
